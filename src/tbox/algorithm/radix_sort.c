@@ -34,8 +34,9 @@ tb_void_t tb_radix_sort(tb_iterator_ref_t iterator, tb_size_t head, tb_size_t ta
 {
 
 }
+
 tb_void_t tb_radix_sort_all(tb_iterator_ref_t iterator, tb_iterator_comp_t comp)
 {
-
+    tb_radix_sort(iterator, tb_iterator_head(iterator), tb_iterator_tail(iterator), comp);
 }
 
