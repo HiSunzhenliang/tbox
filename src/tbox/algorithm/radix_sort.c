@@ -30,9 +30,66 @@
  * implementation
  */
 
+static void print(int *a, int n) {
+    int i;
+    for (i = 0; i < n; i++) {
+        printf("%d\t", a[i]);
+    }
+}
+
 tb_void_t tb_radix_sort(tb_iterator_ref_t iterator, tb_size_t head, tb_size_t tail, tb_iterator_comp_t comp)
 {
+    // check
+    tb_assert_and_check_return(iterator && (tb_iterator_mode(iterator) & TB_ITERATOR_MODE_FORWARD));
+    tb_check_return(head != tail);
 
+#define MAX 20
+#define BASE 10
+//#define SHOWPASS
+    tb_size_t max = head;
+    for (tb_size_t itor = tb_iterator_next(iterator, head); itor != tail; itor = tb_iterator_next(iterator, itor)) {
+        if (tb_iterator_comp(iterator, tb_iterator_item(iterator, itor), tb_iterator_item(iterator, max)) > 0) {
+            max = itor;
+        }
+    }
+
+    tb_size_t       step = tb_iterator_step(iterator);
+    tb_pointer_t temp[] = tb_malloc(step * tb_iterator_size(iterator));
+
+    // void radixsort(int *a, int n) {
+    int i, b[MAX], m = a[0], exp = 1;
+
+    for (i = 1; i < n; i++) {
+        if (a[i] > m) {
+            m = a[i];
+        }
+    }
+
+    while (m / exp > 0) {
+        int bucket[BASE] = {0};
+
+        for (i = 0; i < n; i++) {
+            bucket[(a[i] / exp) % BASE]++;
+        }
+
+        for (i = 1; i < BASE; i++) {
+            bucket[i] += bucket[i - 1];
+        }
+
+        for (i = n - 1; i >= 0; i--) {
+            b[--bucket[(a[i] / exp) % BASE]] = a[i];
+        }
+
+        for (i = 0; i < n; i++) {
+            a[i] = b[i];
+        }
+
+        exp *= BASE;
+#ifdef SHOWPASS
+        printf("\nPASS   : ");
+        print(a, n);
+#endif
+    }
 }
 
 tb_void_t tb_radix_sort_all(tb_iterator_ref_t iterator, tb_iterator_comp_t comp)
